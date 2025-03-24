@@ -24,7 +24,7 @@ services:
     networks:
       - banking-network
     environment:
-      POSTGRES_HOST: postgres
+      POSTGRES_HOST: database
   database:
     image: postgres:17-alpine
     container_name: database
