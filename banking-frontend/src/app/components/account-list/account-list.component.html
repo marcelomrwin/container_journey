@@ -1,0 +1,29 @@
+<div class="container">
+  <h2>Account List</h2>
+
+  <p-table [value]="accounts" [paginator]="true" [rows]="5" responsiveLayout="scroll">
+    <ng-template pTemplate="header">
+      <tr>
+        <th>ID</th>
+        <th>Number</th>
+        <th>Name</th>
+        <th>Balance</th>
+        <th>Actions</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-account>
+      <tr>
+        <td>{{ account.id }}</td>
+        <td>{{ account.accountNumber}}</td>
+        <td>{{ account.ownerName }}</td>
+        <td>{{ account.balance | currency }}</td>
+        <td>
+          <button pButton label="Details" (click)="goToDetails(account.id)"></button>
+          <button pButton label="Delete" class="p-button-danger" (click)="deleteAccount(account.id)"></button>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+
+  <p-button label="New Account"  (click)="goToCreate()"></p-button>
+</div>

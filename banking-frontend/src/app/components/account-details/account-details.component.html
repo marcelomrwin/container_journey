@@ -1,0 +1,14 @@
+<div class="container" *ngIf="account">
+  <h2>Account Details</h2>
+
+  <p-card>
+    <ng-template pTemplate="title"> Account #{{ account.id }} </ng-template>
+    <ng-template pTemplate="content">
+      <p><strong>Number:</strong>{{ account.accountNumber}}</p>
+      <p><strong>Name:</strong> {{ account.ownerName }}</p>
+      <p><strong>Balance:</strong> {{ account.balance | currency }}</p>
+    </ng-template>
+  </p-card>
+
+  <button pButton label="Back" (click)="goBack()"></button>
+</div>

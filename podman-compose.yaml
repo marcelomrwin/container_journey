@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Containerfile
+    container_name: banking-frontend
+    ports:
+      - "8081:80"
+    depends_on:
+      - backend
+    networks:
+      - banking-network
+
+  backend:
+    image: banking-backend:latest
+    container_name: banking-backend
+    ports:
+      - "8080:8080"
+    networks:
+      - banking-network
+
+networks:
+  banking-network:
+    driver: bridge

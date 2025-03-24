@@ -1,0 +1,28 @@
+# Generate Native Build
+# First, generate the native with the command
+# ./mvnw clean package -Dnative -DskipTests \
+# -Dquarkus.native.container-build=true \
+# -Dquarkus.native.container-runtime=podman
+# podman build -f src/main/container/Containerfile.native -t quay.io/masales/banking-backend-native .
+
+FROM registry.access.redhat.com/ubi9/ubi-minimal:9.5
+
+LABEL org.opencontainers.image.title="Container Journey"
+LABEL org.opencontainers.image.description="Base image for the container workshop"
+LABEL org.opencontainers.image.version="1.0.0"
+LABEL org.opencontainers.image.url="https://quay.io/repository/masales/banking-backend"
+LABEL org.opencontainers.image.source="https://github.com/marcelomrwin/container_journey/blob/main/banking-backend"
+LABEL org.opencontainers.image.documentation="https://github.com/marcelomrwin/container_journey"
+LABEL org.opencontainers.image.authors="Marcelo Sales <masales@redhat.com>"
+LABEL org.opencontainers.image.licenses="MIT"
+
+WORKDIR /work/
+RUN chown 1001 /work \
+    && chmod "g+rwX" /work \
+    && chown 1001:root /work
+COPY --chown=1001:root --chmod=0755 target/*-runner /work/application
+
+EXPOSE 8080
+USER 1001
+
+ENTRYPOINT ["./application", "-Dquarkus.http.host=0.0.0.0"]

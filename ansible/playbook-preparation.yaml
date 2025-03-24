@@ -1,0 +1,22 @@
+- name: 📢 Checking if Podman is installed...
+  ansible.builtin.debug:
+    msg: "We are verifying if Podman is installed and working correctly."
+
+- name: 🛠 Run 'podman --version' to check installation
+  ansible.builtin.command: podman --version
+  register: podman_version
+  ignore_errors: true
+
+- name: 🔎 Show Podman version
+  ansible.builtin.debug:
+    var: "{{ podman_version.stdout }}"
+  when: podman_version.rc == 0
+
+- name: ❌ Stop if Podman is not installed
+  ansible.builtin.fail:
+    msg: "Podman is not installed or not working. Please install it before proceeding."
+  when: podman_version.rc != 0
+
+- name: ✅ Podman is installed and ready
+  ansible.builtin.debug:
+    msg: "Podman is correctly installed and functional. We can proceed with the workshop!"

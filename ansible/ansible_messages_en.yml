@@ -1,0 +1,328 @@
+messages:
+  step: "Step"
+  start: "START"
+  end: "END"
+  continue: "Press Enter to continue or Ctrl+C to Cancel"
+  step1:
+    title: 📂 Let's start with the Containers
+    prompt: |
+      Let's run a container and check that our installation works.
+      Access a terminal and run the command:
+
+      podman run --rm hello-world
+
+  step2:
+    title: "🚀 Let's run a container with an HTML page"
+    prompt: |
+      Let's see how a container exposes a communication port to receive external access.
+      Run a container that exposes an HTML page
+
+      Access a terminal and run the command:
+
+      podman run --rm --name hello -p 8180:80 docker/welcome-to-docker
+
+      Access the address through a browser: 🌐 http://localhost:8180
+
+  step3:
+    title: "💻 Listing running containers"
+    prompt: |
+      Access a new terminal and list the running containers with the command:
+
+      podman ps
+
+  step4:
+    title: "🛑 Stopping a container"
+    prompt: |
+      Now let's stop the container that is running.
+      Access a terminal and run the command:
+
+      podman stop hello
+
+      or goes to the terminal where the container is running and press Ctrl+C
+
+  step5:
+    title: 📂 Let's get started with the Containerfile
+    prompt: |
+      Now, we will begin with the Containerfile.
+      Please open the folder {{ playbook_dir }}/container-fundamentals/basic
+      Examine the Containerfile.
+
+  step6:
+    title: 🏗 Build the container image
+    prompt: |
+      Let's create an image with the contents of this folder.
+      Access a terminal, run the command:
+
+      cd {{ playbook_dir }}/container-fundamentals/basic
+      podman build -t container-journey/basic .
+
+  step7:
+    title: 💻 Display the generated image
+    prompt: |
+      List the images with the command:
+
+      podman images --filter 'reference=container-journey/basic'
+
+  step8:
+    title: 🚀 Run the container with the generated image
+    prompt: |
+      Now let's run the container with the image we just created.
+      Access a terminal and run the command:
+
+      podman run --rm --name basic -p 8180:80 container-journey/basic
+
+      Access the address through a browser: 🌐 http://localhost:8180
+
+      Do not forget to stop the container after the test
+
+  step9:
+    title: 🗄️ Working with volumes
+    prompt: |
+      The MNT namespace that manages the file system is ephemeral by default.
+      To deal with persistent file systems we need to use volumes.
+      
+      Navigate to the folder {{ playbook_dir }}/container-fundamentals/volumes
+      
+      Examine the contents of the folder
+
+  step10:
+    title: 🚀 Run a container with volume
+    prompt: |
+      Let's run a container that accesses the files in the html folder
+      Access a terminal and run the commands below:
+
+      cd {{ playbook_dir }}/container-fundamentals/volumes
+      podman run --rm --name volumes -p 8180:80 -v $(pwd)/html:/usr/share/nginx/html:ro nginx:alpine
+
+      Access the address through a browser: 🌐 http://localhost:8180
+  
+  step11:
+    title: 📝 Changing files and reflecting them in the container
+    prompt: |
+      Edit the {{ playbook_dir }}/container-fundamentals/volumes/html/index.html file.
+      Then refresh the browser page 🌐 http://localhost:8180 to see the changes
+
+      Do not forget to stop the container after the test
+
+  step12:
+    title: "📦 Containerizing the demo solution"
+    prompt: |
+      Now that we have a basic understanding of containers, 
+      Let's start the process to running our application in containers.
+
+      Let's start by packaging the backend, a Java application with Quarkus.
+
+      The backend connects to a Postgres database
+      So the first thing we need to do is have a postgres instance running on our machine
+
+  step13:
+    title: "🔗 Communication between containers"
+    prompt: |
+      Before running our database container, it is important to understand how communication between containers works
+
+      When we run containers, by default, they operate in their own isolated networks for security
+
+      For two containers to communicate with each other, we need to create a shared network
+
+      Without this explicit bridge, containers cannot "see" each other, even when they are on the same physical host
+
+      +------------+         +------------+
+      |  Container |  <--->  |  Container |
+      |      A     |         |      B     |
+      +------------+         +------------+
+             |                     |
+             |   +-------------+   |
+             +---|   Network   |---+
+                 +-------------+
+
+  step14:
+    title: "🔗 Creating a network for the containers"
+    prompt: |
+      Let's create a network for the containers to communicate with each other
+      Access a terminal and run the command:
+
+      podman network create container-journey
+
+      This command creates a network called container-journey
+
+  step15:
+    title: "🚀 Running the postgres container in detached mode using the container-journey network"
+    prompt: |
+      Run the postgres container in detached mode so that it runs in the background
+      Access a terminal and run the command:
+
+      cd {{ playbook_dir }}/banking-backend
+      
+      mkdir -p volumes/data
+      
+      podman run -d --rm --name postgres \
+      -e POSTGRES_PASSWORD=postgres \
+      -e POSTGRES_DB=banking \
+      -e POSTGRES_USER=postgres \
+      --network container-journey \
+      -v $(pwd)/volumes/data:/var/lib/postgresql/data \
+      postgres:17-alpine
+
+  step16:
+    title: "🔍 Examining the backend Containerfile"
+    prompt: |
+      Navigate to the folder {{ playbook_dir }}/banking-backend/src/main/container
+      Examine the contents of the file Containerfile
+
+      cat {{ playbook_dir }}/banking-backend/src/main/container/Containerfile
+
+  step17:
+    title: 🏗 Build the backend container image
+    prompt: |
+      Let's create an image for the backend application.
+      Access a terminal, run the command:
+
+      cd {{ playbook_dir }}/banking-backend
+      podman build -f src/main/container/Containerfile -t quay.io/masales/banking-backend:1.0.0 .
+
+      ** Image name is aligned to remote repository **
+
+  step18:
+    title: 💻 Display the generated image
+    prompt: |
+      List the images with the command:
+
+      podman images --filter 'reference=quay.io/masales/banking-backend:1.0.0'
+
+  step19:
+    title: 🚀 Run the backend container with the generated image
+    prompt: |
+      Now let's run the backend container with the image we just created.
+      Access a terminal and run the command:
+
+      podman run -d --rm --name backend \
+      --network container-journey \
+      -e POSTGRES_HOST=postgres \
+      -p 8080:8080 quay.io/masales/banking-backend:1.0.0
+
+  step20:
+    title: 🌐 Access the backend application
+    prompt: |
+      Access a terminal and run the following commands to validate the API exposed by the container
+
+      [List all accounts]
+      curl -X GET http://localhost:8080/api/accounts -H "Accept: application/json"
+
+      [Create new account]
+      curl -X POST http://localhost:8080/api/accounts \
+      -H "Content-Type: application/json" \
+      -d '{
+        "accountNumber": "ACC123456",
+        "ownerName": "John Doyle",
+        "balance": 1000.00
+      }'
+
+      [Get account by number]
+      curl -X GET http://localhost:8080/api/accounts/number/ACC123456 -H "Accept: application/json"
+
+      [Make a deposit]
+      curl -X POST "http://localhost:8080/api/accounts/ACC123456/deposit?amount=500.00" \
+      -H "Content-Type: application/json"
+
+      [Make a withdrawal]
+      curl -X POST "http://localhost:8080/api/accounts/ACC123456/withdraw?amount=200.00" \
+      -H "Content-Type: application/json"
+
+  step21:
+    title: "🔍 Examining the frontend Containerfile"
+    prompt: |
+      Navigate to the folder {{ playbook_dir }}/banking-frontend
+      Examine the contents of the file Containerfile
+
+      cat {{ playbook_dir }}/banking-frontend/Containerfile
+
+  step22:
+    title: 🏗 Build the frontend container image
+    prompt: |
+      Let's create an image for the frontend application.
+      Access a terminal, run the command:
+
+      cd {{ playbook_dir }}/banking-frontend
+      podman build -t quay.io/masales/banking-frontend:1.0.0 .
+
+      ** Image name is aligned to remote repository **
+
+  step23:
+    title: 💻 Display the generated image
+    prompt: |
+      List the images with the command:
+
+      podman images --filter 'reference=quay.io/masales/banking-frontend:1.0.0'
+
+  step24:
+    title: 🚀 Run the frontend container with the generated image
+    prompt: |
+      Now let's run the frontend container with the image we just created.
+      Access a terminal and run the command:
+
+      podman run -d --rm --name frontend \
+      -e API_URL="http://localhost:8080/api/accounts" \
+      -p 8180:80 \
+      quay.io/masales/banking-frontend:1.0.0
+
+  step25:
+    title: 🌐 Access the frontend application
+    prompt: |
+      Access the address through a browser: 🌐 http://localhost:8180
+
+  step26:
+    title: "💻 Listing running containers"
+    prompt: |
+      Access a terminal and list the running containers with the command:
+
+      podman ps
+
+  step27:
+    title: ⬆️ Publishing images to the remote repository
+    prompt: |
+      Let's publish the locally generated images to a remote repository.
+
+      Open a terminal and type the commands:
+
+      podman login quay.io
+      podman push quay.io/masales/banking-backend:1.0.0
+      podman push quay.io/masales/banking-frontend:1.0.0
+
+  step28:
+    title: 🚀 Running the images on another host
+    prompt: |
+      Now that we have published the images to the remote repository, let's run them on another host.
+
+      Access a terminal and run the commands below:
+
+      podman network create container-journey
+
+      mkdir -p /tmp/volumes/data
+
+      podman run -d --rm --name postgres \
+      -e POSTGRES_PASSWORD=postgres \
+      -e POSTGRES_DB=banking \
+      -e POSTGRES_USER=postgres \
+      --network container-journey \
+      -v /tmp/volumes/data:/var/lib/postgresql/data:Z \
+      postgres:17-alpine
+
+      podman run -d --rm --name backend \
+      --network container-journey \
+      -e POSTGRES_HOST=postgres \
+      -p 8180:8080 quay.io/masales/banking-backend:1.0.0
+
+      podman run -d --rm --name frontend \
+      -e API_URL="http://fedora-linux:8180/api/accounts" \
+      -p 8080:80 \
+      quay.io/masales/banking-frontend:1.0.0
+
+      Access the address through a browser: 🌐 http://fedora-linux:8080
+
+  step29:
+    title: "🔚 End of the Container Journey 🎉"
+    prompt: |
+      Congratulations! You have completed the container journey.
+      You have learned the basics of containers and how to run applications in containers.
+
+      If you want to learn more about containers, visit https://podman.io/https://developers.redhat.com/topics/containers

@@ -1,0 +1,10 @@
+.container {
+  max-width: 400px;
+  margin: auto;
+  text-align: center;
+}
+
+p-card {
+  width: 100%;
+  margin-bottom: 20px;
+}

@@ -1,0 +1,55 @@
+---
+- name: Container Workshop
+  hosts: localhost
+  gather_facts: false
+  vars:
+    user_language: "es"
+
+  tasks:
+    - name: Include messages
+      ansible.builtin.include_vars:
+        file: ansible/ansible_messages_{{ user_language }}.yml
+
+    - name: Preparation
+      ansible.builtin.include_tasks:
+        file: ansible/playbook-preparation.yaml
+
+    - name: Prompt Template
+      ansible.builtin.include_tasks: ansible/prompt_template.yml
+      loop:
+        - step1
+        - step2
+        - step3
+        - step4
+        - step5
+        - step6
+        - step7
+        - step8
+        - step9
+        - step10
+        - step11
+        - step12
+        - step13
+        - step14
+        - step15
+        - step16
+        - step17
+        - step18
+        - step19
+        - step20
+        - step21
+        - step22
+        - step23
+        - step24
+        - step25
+        - step26
+        - step27
+        - step28
+        - step29
+      loop_control:
+        loop_var: current_step
+        index_var: step_index
+      vars:
+        message_title: "{{ messages[current_step].title }}"
+        message_prompt: "{{ messages[current_step].prompt }}"
+        step_number: "{{ step_index + 1 }}"

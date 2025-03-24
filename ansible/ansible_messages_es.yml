@@ -1,0 +1,330 @@
+messages:
+  step: "Paso"
+  start: "INICIO"
+  end: "FIN"
+  continue: "Presione Enter para continuar o Ctrl+C para Cancelar"
+  step1:
+    title: 📂 Comencemos con los Contenedores
+    prompt: |
+      Ejecutemos un contenedor y verifiquemos que nuestra instalación funciona.
+      Acceda a una terminal y ejecute el comando:
+
+      podman run --rm hello-world
+
+  step2:
+    title: "🚀 Ejecutemos un contenedor con una página HTML"
+    prompt: |
+      Veamos cómo un contenedor expone un puerto de comunicación para recibir acceso externo.
+      Ejecute un contenedor que exponga una página HTML.
+
+      Acceda a una terminal y ejecute el comando:
+
+      podman run --rm --name hello -p 8180:80 docker/welcome-to-docker
+
+      Acceda a la dirección a través de un navegador: 🌐 http://localhost:8180
+
+  step3:
+    title: "💻 Listar contenedores en ejecución"
+    prompt: |
+      Acceda a una nueva terminal y liste los contenedores en ejecución con el comando:
+
+      podman ps
+
+  step4:
+    title: "🚑 Detener un contenedor"
+    prompt: |
+      Ahora detengamos el contenedor que está en ejecución.
+      Acceda a una terminal y ejecute el comando:
+
+      podman stop hello
+
+      O vaya a la terminal donde el contenedor está en ejecución y presione Ctrl+C.
+
+  step5:
+    title: 📂 Comencemos con el Containerfile
+    prompt: |
+      Ahora comenzaremos con el Containerfile.
+      Por favor, abra la carpeta {{ playbook_dir }}/container-fundamentals/basic.
+      Examine el Containerfile.
+
+  step6:
+    title: 🏗 Construir la imagen del contenedor
+    prompt: |
+      Vamos a crear una imagen con el contenido de esta carpeta.
+      Acceda a una terminal y ejecute el comando:
+
+      cd {{ playbook_dir }}/container-fundamentals/basic
+      podman build -t container-journey/basic .
+
+  step7:
+    title: 💻 Mostrar la imagen generada
+    prompt: |
+      Liste las imágenes con el comando:
+
+      podman images --filter 'reference=container-journey/basic'
+
+  step8:
+    title: 🚀 Ejecutar el contenedor con la imagen generada
+    prompt: |
+      Ahora ejecutemos el contenedor con la imagen que acabamos de crear.
+      Acceda a una terminal y ejecute el comando:
+
+      podman run --rm --name basic -p 8180:80 container-journey/basic
+
+      Acceda a la dirección a través de un navegador: 🌐 http://localhost:8180
+
+      No olvide detener el contenedor después de la prueba.
+
+  step9:
+    title: 🟒 Trabajando con volúmenes
+    prompt: |
+      El espacio de nombres MNT que administra el sistema de archivos es efímero por defecto.
+      Para manejar sistemas de archivos persistentes, necesitamos usar volúmenes.
+      
+      Navegue a la carpeta {{ playbook_dir }}/container-fundamentals/volumes
+      
+      Examine el contenido de la carpeta.
+
+  step10:
+    title: 🚀 Ejecutar un contenedor con volumen
+    prompt: |
+      Ejecutemos un contenedor que acceda a los archivos en la carpeta html.
+      Acceda a una terminal y ejecute los siguientes comandos:
+
+      cd {{ playbook_dir }}/container-fundamentals/volumes
+      podman run --rm --name volumes -p 8180:80 -v $(pwd)/html:/usr/share/nginx/html:ro nginx:alpine
+
+      Acceda a la dirección a través de un navegador: 🌐 http://localhost:8180
+
+  step11:
+    title: 📝 Modificar archivos y reflejar los cambios en el contenedor
+    prompt: |
+      Edite el archivo {{ playbook_dir }}/container-fundamentals/volumes/html/index.html.
+      Luego, actualice la página en el navegador 🌐 http://localhost:8180 para ver los cambios.
+
+      No olvide detener el contenedor después de la prueba.
+
+  step12:
+    title: "📦 Containerizando la solución de demostración"
+    prompt: |
+      Ahora que tenemos una comprensión básica de los contenedores, 
+      Comencemos el proceso para ejecutar nuestra aplicación en contenedores.
+
+      Comenzaremos empaquetando el backend, una aplicación Java con Quarkus.
+
+      El backend se conecta a una base de datos Postgres
+      Así que lo primero que necesitamos hacer es tener una instancia de Postgres en ejecución en nuestra máquina.
+
+  step13:
+    title: "🔗 Comunicación entre contenedores"
+    prompt: |
+      Antes de ejecutar nuestro contenedor de base de datos, es importante comprender cómo funciona la comunicación entre contenedores.
+
+      Cuando ejecutamos contenedores, por defecto, operan en sus propias redes aisladas por seguridad.
+
+      Para que dos contenedores se comuniquen entre sí, necesitamos crear una red compartida.
+
+      Sin este puente explícito, los contenedores no pueden "verse" entre sí, incluso cuando están en el mismo host físico.
+
+      +------------+         +------------+
+      | Contenedor |  <--->  | Contenedor |
+      |      A     |         |      B     |
+      +------------+         +------------+
+             |                     |
+             |   +-------------+   |
+             +---|   Red       |---+
+                 +-------------+
+
+  step14:
+    title: "🔗 Creando una red para los contenedores"
+    prompt: |
+      Creemos una red para que los contenedores se comuniquen entre sí.
+      Acceda a una terminal y ejecute el comando:
+
+      podman network create container-journey
+
+      Este comando crea una red llamada container-journey.
+
+  step15:
+    title: "🚀 Ejecutando el contenedor de Postgres en modo desatendido usando la red container-journey"
+    prompt: |
+      Ejecuta el contenedor de Postgres en modo desatendido para que se ejecute en segundo plano.
+      Accede a un terminal y ejecuta el comando:
+
+      cd {{ playbook_dir }}/banking-backend
+      
+      mkdir -p volumes/data
+      
+      podman run -d --rm --name postgres \
+      -e POSTGRES_PASSWORD=postgres \
+      -e POSTGRES_DB=banking \
+      -e POSTGRES_USER=postgres \
+      --network container-journey \
+      -v $(pwd)/volumes/data:/var/lib/postgresql/data \
+      postgres:17-alpine
+
+  step16:
+    title: "🔍 Examinando el Containerfile del backend"
+    prompt: |
+      Navega a la carpeta {{ playbook_dir }}/banking-backend/src/main/container.
+      Examina el contenido del archivo Containerfile:
+
+      cat {{ playbook_dir }}/banking-backend/src/main/container/Containerfile
+
+  step17:
+    title: "🏗 Construcción de la imagen del contenedor del backend"
+    prompt: |
+      Creemos una imagen para la aplicación backend.
+      Accede a un terminal y ejecuta el comando:
+
+      cd {{ playbook_dir }}/banking-backend
+      podman build -f src/main/container/Containerfile -t quay.io/masales/banking-backend:1.0.0 .
+
+      ** El nombre de la imagen está alineado con el repositorio remoto **
+
+  step18:
+    title: "💻 Mostrar la imagen generada"
+    prompt: |
+      Lista las imágenes con el comando:
+
+      podman images --filter 'reference=quay.io/masales/banking-backend:1.0.0'
+
+  step19:
+    title: "🚀 Ejecutar el contenedor del backend con la imagen generada"
+    prompt: |
+      Ahora ejecutemos el contenedor del backend con la imagen que acabamos de crear.
+      Accede a un terminal y ejecuta el comando:
+
+      podman run -d --rm --name backend \
+      --network container-journey \
+      -e POSTGRES_HOST=postgres \
+      -p 8080:8080 quay.io/masales/banking-backend:1.0.0
+
+  step20:
+    title: "🌐 Acceder a la aplicación backend"
+    prompt: |
+      Accede a un terminal y ejecuta los siguientes comandos para validar la API expuesta por el contenedor:
+
+      [Listar todas las cuentas]
+      curl -X GET http://localhost:8080/api/accounts -H "Accept: application/json"
+
+      [Crear una nueva cuenta]
+      curl -X POST http://localhost:8080/api/accounts \
+      -H "Content-Type: application/json" \
+      -d '{
+        "accountNumber": "ACC123456",
+        "ownerName": "John Doyle",
+        "balance": 1000.00
+      }'
+
+      [Obtener cuenta por número]
+      curl -X GET http://localhost:8080/api/accounts/number/ACC123456 -H "Accept: application/json"
+
+      [Realizar un depósito]
+      curl -X POST "http://localhost:8080/api/accounts/ACC123456/deposit?amount=500.00" \
+      -H "Content-Type: application/json"
+
+      [Realizar un retiro]
+      curl -X POST "http://localhost:8080/api/accounts/ACC123456/withdraw?amount=200.00" \
+      -H "Content-Type: application/json"
+
+  step21:
+    title: "🔍 Examinando el Containerfile del frontend"
+    prompt: |
+      Navega a la carpeta {{ playbook_dir }}/banking-frontend.
+      Examina el contenido del archivo Containerfile:
+
+      cat {{ playbook_dir }}/banking-frontend/Containerfile
+
+  step22:
+    title: "🏗 Construcción de la imagen del contenedor del frontend"
+    prompt: |
+      Creemos una imagen para la aplicación frontend.
+      Accede a un terminal y ejecuta el comando:
+
+      cd {{ playbook_dir }}/banking-frontend
+      podman build -t quay.io/masales/banking-frontend:1.0.0 .
+
+      ** El nombre de la imagen está alineado con el repositorio remoto **
+
+  step23:
+    title: "💻 Mostrar la imagen generada"
+    prompt: |
+      Lista las imágenes con el comando:
+
+      podman images --filter 'reference=quay.io/masales/banking-frontend:1.0.0'
+
+  step24:
+    title: "🚀 Ejecutar el contenedor del frontend con la imagen generada"
+    prompt: |
+      Ahora ejecutemos el contenedor del frontend con la imagen que acabamos de crear.
+      Accede a un terminal y ejecuta el comando:
+
+      podman run -d --rm --name frontend \
+      -e API_URL="http://localhost:8080/api/accounts" \
+      -p 8180:80 \
+      quay.io/masales/banking-frontend:1.0.0
+
+  step25:
+    title: "🌐 Acceder a la aplicación frontend"
+    prompt: |
+      Accede a la dirección a través de un navegador: 🌐 http://localhost:8180
+
+  step26:
+    title: "💻 Listar contenedores en ejecución"
+    prompt: |
+      Accede a un terminal y lista los contenedores en ejecución con el comando:
+
+      podman ps
+
+  step27:
+    title: "⬆️ Publicación de imágenes en el repositorio remoto"
+    prompt: |
+      Publiquemos las imágenes generadas localmente en un repositorio remoto.
+
+      Abre un terminal y escribe los siguientes comandos:
+
+      podman login quay.io
+      podman push quay.io/masales/banking-backend:1.0.0
+      podman push quay.io/masales/banking-frontend:1.0.0
+
+  step28:
+    title: "🚀 Ejecutando las imágenes en otro host"
+    prompt: |
+      Ahora que hemos publicado las imágenes en el repositorio remoto, ejecutémoslas en otro host.
+
+      Accede a un terminal y ejecuta los siguientes comandos:
+
+      podman network create container-journey
+
+      mkdir -p /tmp/volumes/data
+
+      podman run -d --rm --name postgres \
+      -e POSTGRES_PASSWORD=postgres \
+      -e POSTGRES_DB=banking \
+      -e POSTGRES_USER=postgres \
+      --network container-journey \
+      -v /tmp/volumes/data:/var/lib/postgresql/data:Z \
+      postgres:17-alpine
+
+      podman run -d --rm --name backend \
+      --network container-journey \
+      -e POSTGRES_HOST=postgres \
+      -p 8180:8080 quay.io/masales/banking-backend:1.0.0
+
+      podman run -d --rm --name frontend \
+      -e API_URL="http://fedora-linux:8180/api/accounts" \
+      -p 8080:80 \
+      quay.io/masales/banking-frontend:1.0.0
+
+      Accede a la dirección a través de un navegador: 🌐 http://fedora-linux:8080
+
+  step29:
+    title: "🔚 Fin del viaje con contenedores 🎉"
+    prompt: |
+      ¡Felicidades! Has completado el viaje con contenedores.
+      Has aprendido los fundamentos de los contenedores y cómo ejecutar aplicaciones en contenedores.
+
+      Si deseas aprender más sobre contenedores, visita:
+      https://podman.io/
+      https://developers.redhat.com/topics/containers

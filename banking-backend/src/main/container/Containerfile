@@ -1,0 +1,31 @@
+FROM registry.access.redhat.com/ubi9/openjdk-21:1.21 as BUILD
+COPY src /home/default/src
+COPY ./pom.xml /home/default
+WORKDIR /home/default
+RUN mvn clean package -DskipTests
+
+FROM registry.access.redhat.com/ubi9/openjdk-21-runtime:1.21
+
+LABEL org.opencontainers.image.title="Container Journey"
+LABEL org.opencontainers.image.description="Base image for the container workshop"
+LABEL org.opencontainers.image.version="1.0.0"
+LABEL org.opencontainers.image.url="https://quay.io/repository/masales/banking-backend"
+LABEL org.opencontainers.image.source="https://github.com/marcelomrwin/container_journey/blob/main/banking-backend"
+LABEL org.opencontainers.image.documentation="https://github.com/marcelomrwin/container_journey"
+LABEL org.opencontainers.image.authors="Marcelo Sales <masales@redhat.com>"
+LABEL org.opencontainers.image.licenses="MIT"
+
+ENV LANGUAGE='en_US:en'
+
+COPY --from=BUILD --chown=185 /home/default/target/quarkus-app/lib/ /deployments/lib/
+COPY --from=BUILD --chown=185 /home/default/target/quarkus-app/*.jar /deployments/
+COPY --from=BUILD --chown=185 /home/default/target/quarkus-app/app/ /deployments/app/
+COPY --from=BUILD --chown=185 /home/default/target/quarkus-app/quarkus/ /deployments/quarkus/
+
+EXPOSE 8080
+USER 185
+ENV JAVA_OPTS_APPEND="-Dquarkus.http.host=0.0.0.0 -Djava.util.logging.manager=org.jboss.logmanager.LogManager"
+ENV JAVA_APP_JAR="/deployments/quarkus-run.jar"
+
+ENTRYPOINT [ "/opt/jboss/container/java/run/run-java.sh" ]
+

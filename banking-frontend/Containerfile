@@ -1,0 +1,29 @@
+FROM node:23 AS build
+
+RUN npm install -g npm@11.2.0
+
+WORKDIR /app
+COPY package*.json ./
+RUN npm install
+
+COPY . .
+
+RUN npm run build --prod
+
+FROM nginx:1.27
+
+WORKDIR /usr/share/nginx/html
+
+RUN rm -rf ./*
+
+RUN mkdir assets
+
+COPY --from=build /app/dist/banking-frontend/browser ./
+
+COPY nginx.conf /etc/nginx/nginx.conf
+COPY entrypoint.sh /podman-entrypoint.d/entrypoint.sh
+RUN chmod +x /podman-entrypoint.d/entrypoint.sh
+
+EXPOSE 80
+
+ENTRYPOINT ["/podman-entrypoint.d/entrypoint.sh"]

@@ -1,0 +1,36 @@
+<div class="container">
+
+  <h2 align="center">{{ isEditMode ? 'Edit Account' : 'Create New Account' }}</h2>
+
+  <form [formGroup]="accountForm" (ngSubmit)="onSubmit()">
+    <p-fluid class="card flex flex-wrap gap-4">
+      <div class="flex-auto gap-4">
+        <label for="accountNumber">Number</label>
+        <input id="accountNumber" type="text" pInputText formControlName="accountNumber" />
+        <small class="p-error" *ngIf="accountForm.get('accountNumber')?.invalid && accountForm.get('accountNumber')?.touched">
+          Account number is required.
+        </small>
+      </div>
+
+    <div class="flex-auto gap-4">
+      <label for="name">Name</label>
+      <input id="name" type="text" pInputText formControlName="ownerName" />
+      <small class="p-error" *ngIf="accountForm.get('ownerName')?.invalid && accountForm.get('ownerName')?.touched">
+        Name is required.
+      </small>
+    </div>
+
+    <div class="flex-auto">
+      <label for="balance">Balance</label>
+      <p-inputNumber id="balance" type="number" formControlName="balance"></p-inputNumber>
+      <small class="p-error" *ngIf="accountForm.get('balance')?.invalid && accountForm.get('balance')?.touched">
+        The balance must be a positive number.
+      </small>
+    </div>
+
+    <p-button label="Save" type="submit" severity="primary" [disabled]="accountForm.invalid"></p-button>
+    <p-button label="Cancel" severity="danger" (click)="goBack()"></p-button>
+    </p-fluid>
+  </form>
+
+</div>
