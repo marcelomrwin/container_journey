@@ -18,6 +18,17 @@ podman machine start
 
 https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html
 
+## Configure the playbook
+
+In the playbook.yaml file, you can change the value of the `user_language` variable to:
+    * en = English texts
+    * es = Spanish texts
+
+```yaml
+vars:
+    user_language: "es"
+```
+
 ## Run the workshop
 
 ```shell

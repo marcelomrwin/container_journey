@@ -320,6 +320,16 @@ messages:
       Access the address through a browser: 🌐 http://fedora-linux:8080
 
   step29:
+    title: 🚀 Running the images on another host with podman compose
+    prompt: |
+      The previous steps can be performed through a file called podman-compose.yaml
+      Use the provided podman-compose.yaml file as an example
+      Access a terminal and navigate to {{ playbook_dir }} foleder
+      run the command:
+
+      podman-compose up
+
+  step30:
     title: "🔚 End of the Container Journey 🎉"
     prompt: |
       Congratulations! You have completed the container journey.

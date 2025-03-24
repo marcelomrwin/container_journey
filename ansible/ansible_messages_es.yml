@@ -320,6 +320,16 @@ messages:
       Accede a la dirección a través de un navegador: 🌐 http://fedora-linux:8080
 
   step29:
+    title: 🚀 Running the images on another host with podman compose
+    prompt: |
+      Los pasos anteriores se pueden realizar mediante un archivo llamado podman-compose.yaml
+      Use el archivo podman-compose.yaml proporcionado como ejemplo
+      Acceda a una terminal y navegue a la carpeta {{ playbook_dir }}
+      Ejecute el comando:
+
+      podman-compose up
+
+  step30:
     title: "🔚 Fin del viaje con contenedores 🎉"
     prompt: |
       ¡Felicidades! Has completado el viaje con contenedores.
