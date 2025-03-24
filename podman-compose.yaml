@@ -1,25 +1,43 @@
-version: '3.8'
+volumes:
+  banking-data:
+    name: banking-data
 
 services:
   frontend:
-    build:
-      context: .
-      dockerfile: Containerfile
-    container_name: banking-frontend
+    image: quay.io/masales/banking-frontend:1.0.0
+    container_name: frontend
     ports:
-      - "8081:80"
+      - "8080:80"
     depends_on:
       - backend
     networks:
       - banking-network
-
+    environment:
+      API_URL: http://fedora-linux:8180/api/accounts
   backend:
-    image: banking-backend:latest
-    container_name: banking-backend
+    image: quay.io/masales/banking-backend:1.0.0
+    container_name: backend
     ports:
-      - "8080:8080"
+      - "8180:8080"
+    depends_on:
+      - database
     networks:
       - banking-network
+    environment:
+      POSTGRES_HOST: postgres
+  database:
+    image: postgres:17-alpine
+    container_name: database
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: banking
+    ports:
+      - "5432:5432"
+    networks:
+      - banking-network
+    volumes:
+      - banking-data:/var/lib/postgresql/data
 
 networks:
   banking-network:
