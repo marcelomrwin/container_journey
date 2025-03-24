@@ -46,6 +46,7 @@
         - step27
         - step28
         - step29
+        - step30
       loop_control:
         loop_var: current_step
         index_var: step_index
