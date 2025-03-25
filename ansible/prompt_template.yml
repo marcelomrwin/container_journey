@@ -4,9 +4,14 @@
     prompt: |
 
       ==================== {{ messages.step }} {{ step_number }} - {{ messages.start }} ======================
+
       {{ message_prompt }}
 
-      {{ messages.continue }}
       ==================== {{ messages.step }} {{ step_number }} - {{ messages.end }} ======================
-    echo: false
 
+
+
+
+
+      {{ messages.continue }}
+    echo: false

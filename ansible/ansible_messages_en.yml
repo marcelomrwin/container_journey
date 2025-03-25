@@ -79,6 +79,7 @@ messages:
     title: 🗄️ Working with volumes
     prompt: |
       The MNT namespace that manages the file system is ephemeral by default.
+      If you don't use volumes, everything you do in the container will be lost when you destroy it.
       To deal with persistent file systems we need to use volumes.
       
       Navigate to the folder {{ playbook_dir }}/container-fundamentals/volumes

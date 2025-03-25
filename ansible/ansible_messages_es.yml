@@ -76,9 +76,10 @@ messages:
       No olvide detener el contenedor después de la prueba.
 
   step9:
-    title: 🟒 Trabajando con volúmenes
+    title: 🗄️ Trabajando con volúmenes
     prompt: |
-      El espacio de nombres MNT que administra el sistema de archivos es efímero por defecto.
+      El namespace MNT que administra el sistema de archivos es efímero por defecto.
+      Si no utiliza volúmenes, todo lo que haga en el contenedor se perderá cuando lo destruya.
       Para manejar sistemas de archivos persistentes, necesitamos usar volúmenes.
       
       Navegue a la carpeta {{ playbook_dir }}/container-fundamentals/volumes
@@ -149,7 +150,7 @@ messages:
     title: "🚀 Ejecutando el contenedor de Postgres en modo desatendido usando la red container-journey"
     prompt: |
       Ejecuta el contenedor de Postgres en modo desatendido para que se ejecute en segundo plano.
-      Accede a un terminal y ejecuta el comando:
+      Accede a un terminal y ejecuta los comandos:
 
       cd {{ playbook_dir }}/banking-backend
       
